@@ -1,0 +1,18 @@
+🧠 What Is Multithreading?
+Node.js runs JavaScript in a single thread by default. However, CPU-intensive tasks (e.g., file processing, large data computations) can block the main thread and slow down your app.
+
+To solve this, we use multithreading to run these heavy tasks in parallel worker threads without freezing the main app.
+
+🚀 NestJS & Multithreading: How It Works
+NestJS is built on top of Node.js, so it can use:
+
+worker_threads module (native Node.js threads)
+
+Or manage multiple processes using PM2 clustering 
+
+🧰 When to Use This?
+Use multithreading in NestJS when:
+
+You need to process large files, math-heavy logic, or batch operations
+
+You want to avoid blocking the main event loop
