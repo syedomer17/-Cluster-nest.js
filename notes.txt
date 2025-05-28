@@ -1,0 +1,35 @@
+In NestJS, using clustering means leveraging multiple CPU cores to handle more requests concurrently by running multiple instances (workers) of your application. This improves performance and scalability for high-load applications.
+
+🚀 Why Use Clustering?
+Node.js is single-threaded, so by default it uses only one CPU core. If your server has multiple cores (most do), you’re not using the full power of your hardware unless you use clustering.
+
+Clustering lets you:
+
+Handle more concurrent requests.
+
+Utilize multiple CPU cores.
+
+Improve fault tolerance (if one worker crashes, others continue running).
+
+🧠 How Clustering Works in Node.js (and NestJS)
+Node.js provides a built-in cluster module:
+
+A master process starts multiple worker processes (each running your app).
+
+Each worker shares the same server port.
+
+NestJS doesn't support clustering out of the box, but you can easily add it using the cluster module.
+
+🧩 Explanation
+Term	            Meaning
+cluster.isPrimary	Checks if current process is the master.
+cluster.fork()	    Creates a new child (worker) process.
+os.cpus().length	Gets the number of logical CPU cores available.
+bootstrap()	        Runs your NestJS app inside each worker.
+
+🛡️ Notes
+Each worker runs in its own memory space, so they don’t share state.
+
+Use Redis, PostgreSQL, or another store to share data across workers.
+
+Clustering is only for multi-core performance, not horizontal scaling (like load balancing across servers).
