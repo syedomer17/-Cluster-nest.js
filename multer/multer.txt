@@ -1,0 +1,47 @@
+🧾 What is Multer?
+Multer is a middleware for handling file uploads in Node.js. It processes multipart/form-data, which is used when uploading files (e.g., through forms).
+
+📦 Why use Multer in NestJS?
+NestJS doesn’t handle file uploads out-of-the-box. But it integrates Multer under the hood in its @nestjs/platform-express package, so you can easily handle file uploads using decorators.
+
+We use Multer in NestJS to:
+
+Accept file uploads in APIs (e.g., profile pictures, documents, etc.)
+
+Store uploaded files (in memory, disk, or cloud)
+
+🛠 Example Code: Uploading a File in NestJS using Multer
+1. Install Multer
+npm install --save @nestjs/platform-express multer
+
+2.Install Type Definitions
+Run the following command:
+
+npm install --save-dev @types/express @types/multer
+These provide the necessary type definitions for Express.Multer.File.
+
+🧠 Explanation of Key Parts
+Code	                                 Explanation
+@UseInterceptors(FileInterceptor(...))	Tells NestJS to use Multer for handling a single file from the field name file.
+diskStorage({...})	                    Configures where and how files should be stored on the server.
+destination: './uploads'	            All files are stored in a folder called uploads.
+filename: ...	                        Generates a custom filename using timestamp + random value to avoid overwriting.
+@UploadedFile()	                        Injects the uploaded file into the controller method.
+file: Express.Multer.File	            Type safety (thanks to TypeScript). It gives access to file details like originalname, size, path, etc.
+
+📂 Folder Structure (after uploading)
+/project-root
+ ├── /uploads
+ │    └── file-1717001291342-123456.png
+ ├── src/
+ │    └── upload.controller.ts
+
+📌 Use Cases
+Profile picture uploads
+
+Resume/document uploads
+
+File sharing features
+
+Importing data via CSV/Excel
+
