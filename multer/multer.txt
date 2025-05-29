@@ -45,3 +45,11 @@ File sharing features
 
 Importing data via CSV/Excel
 
+| Feature            | Decorator Used                            | Notes            |
+| ------------------ | ----------------------------------------- | ---------------- |
+| Single File        | `@UploadedFile()` + `FileInterceptor()`   | Basic usage      |
+| Multiple Files     | `@UploadedFiles()` + `FilesInterceptor()` | Set max count    |
+| Accept only images | `fileFilter` option                       | Use RegEx        |
+| Store in memory    | `storage: memoryStorage()`                | Use for S3/cloud |
+| Upload to AWS S3   | Use `@aws-sdk/client-s3`                  | Requires buffer  |
+| Validation         | Manual or `Pipes`                         | Custom checks    |

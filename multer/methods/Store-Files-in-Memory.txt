@@ -1,0 +1,13 @@
+🧠 3. Store Files in Memory (Buffer instead of saving to disk)
+Useful when uploading files to the cloud.
+
+@UseInterceptors(
+  FileInterceptor('file', {
+    storage: multer.memoryStorage(), // 🧠 In-memory storage
+  }),
+)
+uploadToMemory(@UploadedFile() file: Express.Multer.File) {
+  console.log(file.buffer); // Buffer available for direct use (e.g., upload to S3)
+  return { message: 'File stored in memory', size: file.size };
+}
+⚠️ Don't forget: import * as multer from 'multer';

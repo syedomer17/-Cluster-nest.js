@@ -1,0 +1,36 @@
+Requires:
+
+npm install @aws-sdk/client-s3
+
+✅ Sample Upload Logic (upload.service.ts):
+
+import { Injectable } from '@nestjs/common';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+
+@Injectable()
+export class UploadService {
+  private s3 = new S3Client({
+    region: 'your-region',
+    credentials: {
+      accessKeyId: 'YOUR_ACCESS_KEY',
+      secretAccessKey: 'YOUR_SECRET_KEY',
+    },
+  });
+
+  async uploadFileToS3(file: Express.Multer.File) {
+    const uploadParams = {
+      Bucket: 'your-bucket-name',
+      Key: file.originalname,
+      Body: file.buffer,
+      ContentType: file.mimetype,
+    };
+
+    await this.s3.send(new PutObjectCommand(uploadParams));
+
+    return {
+      message: 'File uploaded to S3',
+      key: file.originalname,
+    };
+  }
+}
+Call this from your controller after storing files in memory (see step 3).

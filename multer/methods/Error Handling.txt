@@ -1,0 +1,18 @@
+⚠️ 5. Validation & Error Handling
+✅ Use Pipes for custom validations
+
+@Post('validated')
+@UseInterceptors(FileInterceptor('file'))
+uploadWithValidation(@UploadedFile() file: Express.Multer.File) {
+  if (!file) throw new BadRequestException('File is required');
+  if (file.size > 1024 * 1024) throw new BadRequestException('File too large');
+  return { message: 'Validated file uploaded', file };
+}
+✅ Bonus: Serve Uploaded Files
+In main.ts:
+
+
+app.useStaticAssets(join(__dirname, '..', 'uploads'));
+Now you can access files via:
+
+http://localhost:3000/your-uploaded-file.jpg
