@@ -72,4 +72,9 @@ export class AuthController {
     res.clearCookie('refreshToken');
     return res.json({ message: 'Logged out' });
   }
+  @Get('me')
+  @UseGuards(AuthGuard('jwt'))
+  getProfile(@Req() req: RequestWithUser) {
+    return req.user;
+  }
 }
