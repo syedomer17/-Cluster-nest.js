@@ -1,0 +1,308 @@
+Great initiative! OWASP (Open Web Application Security Project) provides a **standard for securing web applications**. If you're using **NestJS**, applying OWASP recommendations will make your app more secure and production-ready.
+
+---
+
+## 🛡️ What Is OWASP?
+
+OWASP is a nonprofit foundation that works to improve the security of software. Their most well-known resource is the **OWASP Top 10**: a list of the **most critical security risks** for web apps.
+
+---
+
+## 🔐 Let’s Learn OWASP Security Practices in NestJS — One by One
+
+We’ll cover the **OWASP Top 10** and how to implement them **with code examples in NestJS**.
+
+---
+
+### ✅ 1. **A01:2021 - Broken Access Control**
+
+#### ❗ Problem:
+
+Unauthorized users access or modify data they shouldn't.
+
+#### ✅ NestJS Fix:
+
+Use **Guards** and **Role-Based Authorization**.
+
+```ts
+// roles.guard.ts
+@Injectable()
+export class RolesGuard implements CanActivate {
+  canActivate(context: ExecutionContext): boolean {
+    const request = context.switchToHttp().getRequest();
+    const user = request.user;
+
+    return user?.role === 'admin'; // Only allow admins
+  }
+}
+```
+
+```ts
+@UseGuards(RolesGuard)
+@Get('admin')
+getAdminData() {
+  return 'Only admin can see this';
+}
+```
+
+---
+
+### ✅ 2. **A02:2021 - Cryptographic Failures**
+
+#### ❗ Problem:
+
+Sensitive data like passwords are stored or transmitted insecurely.
+
+#### ✅ NestJS Fix:
+
+* Use **bcrypt** for hashing
+* Use **HTTPS** for secure transmission
+* Use **environment variables** for secrets
+
+```ts
+import * as bcrypt from 'bcrypt';
+
+const hashed = await bcrypt.hash(password, 10); // store this
+const isMatch = await bcrypt.compare(inputPassword, hashed);
+```
+
+```bash
+# .env
+JWT_SECRET=supersecretkey
+```
+
+---
+
+### ✅ 3. **A03:2021 - Injection (SQL, NoSQL, etc.)**
+
+#### ❗ Problem:
+
+Untrusted input is used in queries, e.g., SQL or MongoDB injection.
+
+#### ✅ NestJS Fix:
+
+* Use **ORMs (TypeORM/Prisma/Mongoose)** with parameterized queries
+* Validate inputs using `class-validator`
+
+```ts
+@IsEmail()
+email: string;
+```
+
+---
+
+### ✅ 4. **A04:2021 - Insecure Design**
+
+#### ❗ Problem:
+
+Poor architectural security decisions.
+
+#### ✅ Fix in NestJS:
+
+* Use **DTOs (Data Transfer Objects)**
+* Apply **secure defaults**
+* Follow **least privilege principle**
+* Don’t expose internal implementation
+
+Example:
+
+```ts
+class CreateUserDto {
+  @IsString()
+  name: string;
+
+  @IsEmail()
+  email: string;
+}
+```
+
+---
+
+### ✅ 5. **A05:2021 - Security Misconfiguration**
+
+#### ❗ Problem:
+
+Default configs, unnecessary features, etc.
+
+#### ✅ NestJS Fix:
+
+* Use `helmet` for HTTP headers
+
+```bash
+npm install helmet
+```
+
+```ts
+// main.ts
+import * as helmet from 'helmet';
+app.use(helmet());
+```
+
+* Set secure CORS:
+
+```ts
+app.enableCors({
+  origin: ['https://yourdomain.com'],
+  methods: ['GET', 'POST'],
+  credentials: true,
+});
+```
+
+* Disable stack traces in production:
+
+```ts
+if (process.env.NODE_ENV === 'production') {
+  app.useGlobalFilters(new ProductionExceptionFilter());
+}
+```
+
+---
+
+### ✅ 6. **A06:2021 - Vulnerable & Outdated Components**
+
+#### ❗ Problem:
+
+Using packages with known vulnerabilities.
+
+#### ✅ NestJS Fix:
+
+* Run `npm audit fix`
+* Use **npm-check-updates**
+* Set up **Snyk** or **GitHub Dependabot**
+
+```bash
+npm install -g npm-check-updates
+ncu -u
+npm install
+```
+
+---
+
+### ✅ 7. **A07:2021 - Identification and Authentication Failures**
+
+#### ❗ Problem:
+
+Weak login mechanisms, no MFA, etc.
+
+#### ✅ NestJS Fix:
+
+* Use **JWT** securely
+* Use **bcrypt** for password hashing
+* Implement **rate limiting** for login
+
+```bash
+npm install --save express-rate-limit
+```
+
+```ts
+// main.ts
+import * as rateLimit from 'express-rate-limit';
+
+app.use(rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 min
+  max: 5, // limit to 5 requests
+}));
+```
+
+---
+
+### ✅ 8. **A08:2021 - Software and Data Integrity Failures**
+
+#### ❗ Problem:
+
+Compromised pipelines or unverified software updates.
+
+#### ✅ Fix:
+
+* Use **signed JWTs**
+* Validate file uploads with MIME types
+* Use **helmet** and **input sanitization**
+
+---
+
+### ✅ 9. **A09:2021 - Security Logging and Monitoring Failures**
+
+#### ❗ Problem:
+
+No logs or alerts to detect attacks.
+
+#### ✅ NestJS Fix:
+
+* Use `winston` or `pino` for logging
+* Set up alerts on suspicious activity
+* Track logins, failed attempts, etc.
+
+```bash
+npm install --save nest-winston winston
+```
+
+```ts
+import { WinstonModule } from 'nest-winston';
+
+@Module({
+  imports: [
+    WinstonModule.forRoot({
+      transports: [new winston.transports.Console()],
+    }),
+  ],
+})
+```
+
+---
+
+### ✅ 10. **A10:2021 - Server-Side Request Forgery (SSRF)**
+
+#### ❗ Problem:
+
+Attackers force your server to fetch internal URLs.
+
+#### ✅ NestJS Fix:
+
+* Whitelist allowed URLs/domains
+* Block internal IP ranges
+
+```ts
+function isSafeUrl(url: string): boolean {
+  return url.startsWith('https://safe-domain.com');
+}
+```
+
+---
+
+## 📦 Bonus: Install All Common Security Middleware
+
+```bash
+npm install helmet express-rate-limit csurf xss-clean
+```
+
+Then configure:
+
+```ts
+import * as helmet from 'helmet';
+import * as rateLimit from 'express-rate-limit';
+import * as xssClean from 'xss-clean';
+
+app.use(helmet());
+app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
+app.use(xssClean());
+```
+
+---
+
+## 🔐 Summary Table
+
+| OWASP Risk             | NestJS Solution                     |
+| ---------------------- | ----------------------------------- |
+| Access Control         | Guards + Roles                      |
+| Cryptographic Failures | bcrypt + HTTPS + .env               |
+| Injection              | DTO + ORM + Validators              |
+| Insecure Design        | DTO + Least Privilege               |
+| Misconfiguration       | helmet + CORS + Filters             |
+| Outdated Components    | `npm audit` + updates               |
+| Auth Failures          | JWT + bcrypt + rate-limit           |
+| Integrity Failures     | File filters + Signed tokens        |
+| Logging Failures       | Winston + Alerts                    |
+| SSRF                   | Validate URLs and block private IPs |
+
+---
+
